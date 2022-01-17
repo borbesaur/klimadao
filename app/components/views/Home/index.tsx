@@ -24,6 +24,7 @@ import { Wrap } from "components/views/Wrap";
 import { InvalidNetworkModal } from "components/InvalidNetworkModal";
 import { InvalidRPCModal } from "components/InvalidRPCModal";
 import { CheckURLBanner } from "components/CheckURLBanner";
+import { NotificationModal } from "components/NotificationModal";
 
 import styles from "./index.module.css";
 
@@ -469,6 +470,7 @@ export const Home: FC = () => {
           }}
         />
       )}
+      <NotificationModal />
     </>
   );
 };
