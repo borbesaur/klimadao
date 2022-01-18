@@ -5,7 +5,6 @@ import { notificationStatus } from "state/selectors";
 import { setAppState, AppNotificationStatus } from "state/app";
 import InfoOutlined from "@mui/icons-material/InfoOutlined";
 
-
 import {
   changeApprovalTransaction,
   changeStakeTransaction,
@@ -33,7 +32,6 @@ import {
 import t from "@klimadao/lib/theme/typography.module.css";
 import styles from "./index.module.css";
 
-
 const WithPlaceholder: FC<{
   condition: boolean;
   placeholder: string;
@@ -54,12 +52,17 @@ export const Stake = (props: Props) => {
   const { provider, address, isConnected } = props;
   const dispatch = useAppDispatch();
   const [view, setView] = useState("stake");
-  const fullStatus: AppNotificationStatus | null = useSelector(notificationStatus);
+  const fullStatus: AppNotificationStatus | null =
+    useSelector(notificationStatus);
   const status = fullStatus && fullStatus.statusType;
+
   const setStatus = (status: string, message: string) => {
     if (!status) dispatch(setAppState({ notificationStatus: null }));
-    else dispatch(setAppState({ notificationStatus: { statusType: status, message } }));
-  }
+    else
+      dispatch(
+        setAppState({ notificationStatus: { statusType: status, message } })
+      );
+  };
 
   const [quantity, setQuantity] = useState("");
   const [singletonSource, singleton] = useTooltipSingleton();
@@ -234,8 +237,9 @@ export const Stake = (props: Props) => {
               setStatus("", "");
             }}
             type="number"
-            placeholder={`Amount to ${{ stake: "stake", unstake: "unstake" }[view]
-              }`}
+            placeholder={`Amount to ${
+              { stake: "stake", unstake: "unstake" }[view]
+            }`}
             min="0"
           />
           <button

@@ -10,6 +10,8 @@ import { ethers } from "ethers";
 import { selectBalances, selectMigrateAllowance } from "state/selectors";
 import { redeemAlpha, setMigrateAllowance } from "state/user";
 import { useAppDispatch } from "state";
+import { notificationStatus } from "state/selectors";
+import { setAppState, AppNotificationStatus } from "state/app";
 
 interface Props {
   provider: ethers.providers.JsonRpcProvider;
@@ -20,7 +22,19 @@ interface Props {
 export const Redeem: FC<Props> = (props) => {
   const { provider, address, isConnected } = props;
   const dispatch = useAppDispatch();
-  const [status, setStatus] = useState(""); // "userConfirmation", "networkConfirmation", "done", "userRejected, "error"
+
+  const fullStatus: AppNotificationStatus | null =
+    useSelector(notificationStatus);
+  const status = fullStatus && fullStatus.statusType;
+
+  const setStatus = (status: string, message: string) => {
+    if (!status) dispatch(setAppState({ notificationStatus: null }));
+    else
+      dispatch(
+        setAppState({ notificationStatus: { statusType: status, message } })
+      );
+  };
+
   const [view, setView] = useState<"aklima" | "alklima">("aklima"); // aKLIMA alKLIMA
   const [quantity, setQuantity] = useState("");
 
@@ -35,7 +49,7 @@ export const Redeem: FC<Props> = (props) => {
       isLoading);
 
   const setMax = () => {
-    setStatus("");
+    setStatus("", "");
     if (view === "aklima") {
       setQuantity(balances?.aklima ?? "0");
     } else {
@@ -115,21 +129,6 @@ export const Redeem: FC<Props> = (props) => {
     } else {
       return { children: "ERROR", onClick: undefined, disabled: true };
     }
-  };
-
-  const getStatusMessage = () => {
-    if (status === "userConfirmation") {
-      return "Please click 'confirm' in your wallet to continue.";
-    } else if (status === "networkConfirmation") {
-      return "Transaction initiated. Waiting for network confirmation.";
-    } else if (status === "error") {
-      return "❌ Error: something went wrong...";
-    } else if (status === "done") {
-      return "✔️ Success!";
-    } else if (status === "userRejected") {
-      return "✖️ You chose to reject the transaction.";
-    }
-    return null;
   };
 
   return (
@@ -267,9 +266,6 @@ export const Redeem: FC<Props> = (props) => {
           {...getButtonProps()}
         />
       </div>
-      {getStatusMessage() && (
-        <p className={styles.statusMessage}>{getStatusMessage()}</p>
-      )}
     </div>
   );
 };

@@ -2,6 +2,8 @@ import React, { FC, useState } from "react";
 import { useSelector } from "react-redux";
 import { changeApprovalTransaction, wrapTransaction } from "actions/wrap";
 import styles from "components/views/Stake/index.module.css";
+import { notificationStatus } from "state/selectors";
+import { setAppState, AppNotificationStatus } from "state/app";
 
 import {
   Spinner,
@@ -30,7 +32,17 @@ interface Props {
 export const Wrap: FC<Props> = (props) => {
   const { provider, address, isConnected } = props;
   const dispatch = useAppDispatch();
-  const [status, setStatus] = useState<TxnStatus | "">("");
+  const fullStatus: AppNotificationStatus | null =
+    useSelector(notificationStatus);
+  const status = fullStatus && fullStatus.statusType;
+  const setStatus = (status: string, message: string) => {
+    if (!status) dispatch(setAppState({ notificationStatus: null }));
+    else
+      dispatch(
+        setAppState({ notificationStatus: { statusType: status, message } })
+      );
+  };
+
   const [view, setView] = useState<"wrap" | "unwrap">("wrap");
   const [quantity, setQuantity] = useState("");
   const [singletonSource, singleton] = useTooltipSingleton();
@@ -47,7 +59,7 @@ export const Wrap: FC<Props> = (props) => {
       isLoading);
 
   const setMax = () => {
-    setStatus("");
+    setStatus("", "");
     if (view === "wrap") {
       setQuantity(balances?.sklima ?? "0");
     } else {
@@ -127,21 +139,6 @@ export const Wrap: FC<Props> = (props) => {
     } else {
       return { children: "ERROR", onClick: undefined, disabled: true };
     }
-  };
-
-  const getStatusMessage = () => {
-    if (status === "userConfirmation") {
-      return "Please click 'confirm' in your wallet to continue.";
-    } else if (status === "networkConfirmation") {
-      return "Transaction initiated. Waiting for network confirmation.";
-    } else if (status === "error") {
-      return "❌ Error: something went wrong...";
-    } else if (status === "done") {
-      return "✔️ Success!";
-    } else if (status === "userRejected") {
-      return "✖️ You chose to reject the transaction.";
-    }
-    return null;
   };
 
   const youWillGet = () => {
@@ -347,9 +344,6 @@ export const Wrap: FC<Props> = (props) => {
           {...getButtonProps()}
         />
       </div>
-      {getStatusMessage() && (
-        <p className={styles.statusMessage}>{getStatusMessage()}</p>
-      )}
     </div>
   );
 };

@@ -6,6 +6,8 @@ import DownOutlined from "@mui/icons-material/KeyboardArrowDownRounded";
 import UpOutlined from "@mui/icons-material/KeyboardArrowUpRounded";
 import LeftOutlined from "@mui/icons-material/KeyboardArrowLeftRounded";
 import { Link } from "react-router-dom";
+import { setAppState, AppNotificationStatus } from "state/app";
+import { notificationStatus } from "state/selectors";
 
 import {
   changeApprovalTransaction,
@@ -67,7 +69,11 @@ interface Props {
 export const Bond: FC<Props> = (props) => {
   const bondInfo = useBond(props.bond);
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [status, setStatus] = useState(""); // "userConfirmation", "networkConfirmation", "done", "userRejected, "error"
+  // const [status, setStatus] = useState(""); // "userConfirmation", "networkConfirmation", "done", "userRejected, "error"
+
+  const fullStatus: AppNotificationStatus | null =
+    useSelector(notificationStatus);
+  const status = fullStatus && fullStatus.statusType;
 
   const dispatch = useAppDispatch();
   const [slippage, setSlippage] = useState(2);
@@ -84,6 +90,14 @@ export const Bond: FC<Props> = (props) => {
   const [sourceSingleton, singleton] = useTooltipSingleton();
 
   const isLoading = !allowance || quantity !== debouncedQuantity;
+
+  const setStatus = (status: string, message: string) => {
+    if (!status) dispatch(setAppState({ notificationStatus: null }));
+    else
+      dispatch(
+        setAppState({ notificationStatus: { statusType: status, message } })
+      );
+  };
 
   const showSpinner =
     props.isConnected &&
@@ -122,7 +136,7 @@ export const Bond: FC<Props> = (props) => {
   };
 
   const setMax = () => {
-    setStatus("");
+    setStatus("", "");
     if (view === "bond") {
       const bondMax = getBondMax();
       setQuantity(bondMax ?? "0");
@@ -163,7 +177,7 @@ export const Bond: FC<Props> = (props) => {
 
   const handleAllowance = async () => {
     try {
-      setStatus("");
+      setStatus("", "");
       const value = await changeApprovalTransaction({
         provider: props.provider,
         bond: props.bond,
@@ -276,21 +290,6 @@ export const Bond: FC<Props> = (props) => {
     } else {
       return { children: "ERROR", onClick: undefined, disabled: true };
     }
-  };
-
-  const getStatusMessage = () => {
-    if (status === "userConfirmation") {
-      return "Please click 'confirm' in your wallet to continue.";
-    } else if (status === "networkConfirmation") {
-      return "Transaction initiated. Waiting for network confirmation.";
-    } else if (status === "error") {
-      return "❌ Error: something went wrong...";
-    } else if (status === "done") {
-      return "✔️ Success!";
-    } else if (status === "userRejected") {
-      return "✖️ You chose to reject the transaction.";
-    }
-    return null;
   };
 
   const isBondDiscountNegative =
@@ -661,9 +660,6 @@ export const Bond: FC<Props> = (props) => {
           {...getButtonProps()}
         />
       </div>
-      {getStatusMessage() && (
-        <p className={styles.statusMessage}>{getStatusMessage()}</p>
-      )}
     </div>
   );
 };

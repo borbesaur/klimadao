@@ -1,4 +1,7 @@
 import { AppNotificationStatus } from "state/app";
+import { useDispatch } from "react-redux";
+import { setAppState } from "state/app";
+
 
 
 export type TxnStatus =
@@ -7,7 +10,7 @@ export type TxnStatus =
   | "done"
   | "error";
 
-export type OnStatusHandler = (status: TxnStatus, message: String) => void;
+export type OnStatusHandler = (status: TxnStatus, message: string) => void;
 
 
 export const getStatusMessage = (status: AppNotificationStatus) => {
@@ -27,3 +30,5 @@ export const getStatusMessage = (status: AppNotificationStatus) => {
   }
   return null;
 };
+
+
