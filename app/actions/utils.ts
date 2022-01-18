@@ -26,9 +26,9 @@ export const getStatusMessage = (status: AppNotificationStatus) => {
   } else if (statusType === "error") {
     return "❌ Error: something went wrong...";
   } else if (statusType === "done") {
+    if (message) return message;
     return "✔️ Success!";
   }
   return null;
 };
-
 

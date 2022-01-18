@@ -34,7 +34,7 @@ export const changeApprovalTransaction = async (params: {
     const txn = await contract.approve(address, value.toString());
     params.onStatus("networkConfirmation", "");
     await txn.wait(1);
-    params.onStatus("done", `approve ${params.action}`);
+    params.onStatus("done", "Transaction approved successfully");
     return formatUnits(value, 9);
   } catch (error: any) {
     if (error.code === 4001) {
@@ -79,7 +79,7 @@ export const changeStakeTransaction = async (params: {
         : await contract.unstake(parsedValue, true); // always trigger rebase because gas is cheap
     params.onStatus("networkConfirmation", "");
     await txn.wait(1);
-    params.onStatus("done", "");
+    params.onStatus("done", "Transaction Confirmed");
   } catch (error: any) {
     if (error.code === 4001) {
       params.onStatus("error", "userRejected");

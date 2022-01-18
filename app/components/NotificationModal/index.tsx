@@ -11,9 +11,9 @@ import { setAppState } from "state/app";
 import { useDispatch } from "react-redux";
 import { getStatusMessage, TxnStatus } from "actions/utils";
 
-type StatusTypes = "done" | "error" | "userConfirmation";
+type StatusTypes = "done" | "error" | "userConfirmation" | "networkConfirmation";
 
-interface Props {}
+interface Props { }
 
 interface ModalAssetTypes {
   [key: string]: {
@@ -26,16 +26,19 @@ const modalAssets: ModalAssetTypes = {
     done: "SUCCESS!",
     error: "FAILURE!",
     userConfirmation: "CONFIRMATION",
+    networkConfirmation: "PENDING"
   },
   iconStyle: {
     done: styles.icon_success,
     error: styles.icon_failure,
     userConfirmation: styles.icon_confirmation,
+    networkConfirmation: styles.icon_confirmation,
   },
   iconComponent: {
     done: <CheckIcon />,
     error: <ErrorOutlineOutlinedIcon />,
     userConfirmation: <AlarmIcon />,
+    networkConfirmation: <AlarmIcon />,
   },
 };
 
