@@ -88,7 +88,7 @@ export const Stake = (props: Props) => {
     stakingRebase * Number(balances.sklima);
 
   const setMax = () => {
-    setStatus("");
+    setStatus("", "");
     if (view === "stake") {
       setQuantity(balances?.klima ?? "0");
     } else {
@@ -182,21 +182,6 @@ export const Stake = (props: Props) => {
     }
   };
 
-  const getStatusMessage = () => {
-    if (status === "userConfirmation") {
-      return "Please click 'confirm' in your wallet to continue.";
-    } else if (status === "networkConfirmation") {
-      return "Transaction initiated. Waiting for network confirmation.";
-    } else if (status === "error") {
-      return "❌ Error: something went wrong...";
-    } else if (status === "done") {
-      return "✔️ Success!";
-    } else if (status === "userRejected") {
-      return "✖️ You chose to reject the transaction.";
-    }
-    return null;
-  };
-
   const showSpinner =
     isConnected &&
     (status === "userConfirmation" ||
@@ -220,7 +205,7 @@ export const Stake = (props: Props) => {
             type="button"
             onClick={() => {
               setQuantity("");
-              setStatus("");
+              setStatus("", "");
               setView("stake");
             }}
             data-active={view === "stake"}
@@ -232,7 +217,7 @@ export const Stake = (props: Props) => {
             type="button"
             onClick={() => {
               setQuantity("");
-              setStatus("");
+              setStatus("", "");
               setView("unstake");
             }}
             data-active={view === "unstake"}
@@ -246,7 +231,7 @@ export const Stake = (props: Props) => {
             value={quantity}
             onChange={(e) => {
               setQuantity(e.target.value);
-              setStatus("");
+              setStatus("", "");
             }}
             type="number"
             placeholder={`Amount to ${{ stake: "stake", unstake: "unstake" }[view]
@@ -427,9 +412,6 @@ export const Stake = (props: Props) => {
           {...getButtonProps()}
         />
       </div>
-      {getStatusMessage() && (
-        <p className={styles.statusMessage}>{getStatusMessage()}</p>
-      )}
     </div>
   );
 };
